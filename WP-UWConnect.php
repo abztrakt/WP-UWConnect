@@ -143,7 +143,7 @@ function uw_connect_options() {
           create_servicecategories_page();
           create_serviceAZ_page();
       } else if ( $servcat_val == 'off' && $prevservcat == 'on' ) {
-          $shpage = get_page_by_name('services');
+          $shpage = get_post(get_option('uwc_SERV_HOME_ID'));
           $scpage = get_page_by_name('servicecategories');
           $servspage = get_page_by_name('servicesaz');
           wp_delete_post( $shpage->ID, true );
@@ -243,8 +243,12 @@ function create_service_home_page() {
             'post_status' => 'publish',
             'post_title' => 'Service Catalog',
             'post_type' => 'page',
+            'post_content' => '[taxtermlist tax="servicecategory"]',
       );
+      update_option('uwc_SERV_HOME_TITLE', $post['post_title']);
+      update_option('uwc_SERV_HOME_SLUG', $post['post_name']);
       $newvalue = wp_insert_post( $post, false );
+      update_option('uwc_SERV_HOME_ID', $newvalue);
     }
 }
 register_activation_hook(__FILE__, 'create_service_home_page');
@@ -386,7 +390,7 @@ function request_page_template( $template ) {
       }
     }
   }
-  if ( is_page( 'services' ) ) {
+  if ( is_page( get_option('uwc_SERV_HOME_ID') ) ) {
     if ( basename( get_page_template() ) == "page.php" ) {
       $new_template = dirname(__FILE__) . '/service-home.php';
       if ( '' != $new_template ) {
