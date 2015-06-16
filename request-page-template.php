@@ -95,6 +95,10 @@ get_header(); ?>
                             $url = '/incident.do?JSONv2&displayvalue=true&sysparm_query=number=' . $sn_num . '^caller_id.user_name=' . $user . '^ORwatch_listLIKE' . $user_id;
                             $sn_type = 'incident (INC)';
                             $urlwl = '/incident.do?JSONv2&sysparm_query=number='. $sn_num . '^caller_id.user_name=' . $user . '^ORwatch_listLIKE' . $user_id;
+                        } else if( $sn_type == 'PRB' ) {
+                            $url = '/problem.do?JSONv2&displayvalue=true&sysparm_action=getRecords&sysparm_query=active=true^watch_listLIKE' . $user_id;
+                            $sn_type = 'problem (PRB)';
+                            $urlwl = '/problem.do?JSONv2&sysparm_action=getRecords&sysparm_query=active=true^watch_listLIKE' . $user_id;
                         } else {
                             echo "Unrecognized type";
                             $error_flag = True;

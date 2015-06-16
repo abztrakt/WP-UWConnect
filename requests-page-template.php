@@ -102,9 +102,21 @@ get_header(); ?>
                             $inc_urlwl = '/incident.do?JSONv2&sysparm_action=getRecords&sysparm_query=active=true^state!=14^caller_id.user_name=' . $user. '^ORwatch_listLIKE' . $user_id;
                             $inc_jsonwl = get_SN($inc_urlwl, $args);
                         }
+
+                        // Problems
+                        $prb_url = '/problem.do?JSONv2&displayvalue=true&sysparm_action=getRecords&sysparm_query=active=true^watch_listLIKE' . $user_id;
+                        $prb_json = get_SN($prb_url, $args);
+                        $has_prb = FALSE;
+                        if ( !empty( $prb_json->records) ) {
+                            $has_prb = TRUE;
+                        }
+                        if ($has_prb) {
+                            $prb_urlwl = '/problem.do?JSONv2&sysparm_action=getRecords&sysparm_query=active=true^watch_listLIKE' . $user_id;
+                            $prb_jsonwl = get_SN($prb_urlwl, $args);
+                        }
                 ?>
 
-                    <?php if( $has_req || $has_inc ) { ?>
+                    <?php if( $has_req || $has_inc || $has_prb ) { ?>
                     <h2 id="incident_header" class="assistive-text">Incidents</h2>
                     
                     <div class="request-list request-list-header row">
@@ -117,6 +129,62 @@ get_header(); ?>
                     
                     <?php } ?>
 
+                    <?php if ( $has_prb ) { ?>
+                      <ol class="request-list" style="padding-left:0px;" aria-labelledby="problem_header">
+
+                    <?php
+                    //Display problems
+                    usort($prb_json->records, 'sortByNumberDesc'); //order tickets by number descending
+                    usort($prb_jsonwl->records, 'sortByNumberDesc'); //match ordering in watch list
+                    $prb_count = 0;
+                    foreach ( $prb_json->records as $record ) {
+                        if ($record->state != "Resolved" && $record->state != "Awaiting User Info") {
+                            $record->state = "Active";
+                        }
+                            $detail_url = site_url() . '/myrequest/' . $record->number;
+                            if ($record->state == "Resolved" || $record->state == "Closed") {
+                                echo "<li class='row resolved_ticket'><a href='$detail_url'>";
+                            } else {
+                                echo "<li class='row row_underline inner_row_underline'><a href='$detail_url'>";
+                            }
+                    ?>
+                            <span class="request-list-number hidden-xs whole_row_link col-md-2 col-lg-2 col-sm-2" aria-labelledby="col_head_num">
+                                <?php
+                                    echo "$record->number";
+                                ?>
+                            </span>
+                            <span class="request-list-service hidden-sm hidden-xs whole_row_link col-lg-3 col-md-3" aria-labelledby="col_head_ser">
+                                <?php
+                                echo "$record->cmdb_ci";
+                                ?>
+                            </span>
+
+                            <span class="request-list-description whole_row_link col-lg-4 col-md-6 col-sm-6 col-xs-4" aria-labelledby="col_head_des">
+                                <?php
+                                echo "$record->short_description";
+                                ?>
+                            </span>
+                            <span class="request-list-status whole_row_link col-lg-2 col-md-2 col-sm-2 col-xs-2" aria-labelledby="col_head_sta">
+                                <?php
+                                    //get and display the state of the record
+                                    if (array_key_exists($record->state, $states)) {
+                                        $class = $states[$record->state];
+                                        echo "<span class='$class'>$record->state</span>";
+                                    }
+                                    //check to see if logged in user is in watchlist and is not the caller - if so display watching label
+                                    if ( strpos($prb_jsonwl->records[$prb_count]->watch_list, $user_id) !== FALSE && $prb_jsonwl->records[$prb_count]->u_caller != $user_id) {
+                                        echo " <span class='label label-warning'>Watching</span>";
+                                    }
+                                    $prb_count++;
+                                ?>
+                            </span>
+                        </a></li>
+                    <?php
+                    }
+                    ?>
+                    </ol>
+
+                    <?php } ?>
 
                     <?php if( $has_inc ) { ?>
                     <ol class="request-list" style="padding-left:0px;" aria-labelledby="incident_header">
