@@ -286,8 +286,8 @@ function service_page_template($template) {
 function service_breadcrumbs($post = '') {
     $breadcrumb = '';
     $service_title;
-    $homepagetitle = 'Service Catalog';
-    $homepageslug = 'services';
+    $homepagetitle = get_option('uwc_SERV_HOME_TITLE');
+    $homepageslug = get_option('uwc_SERV_HOME_SLUG');
     if ( !empty($post) && $post->post_type == 'service' ) {
         $service_title = $post->post_title;
     }
@@ -302,4 +302,13 @@ function service_breadcrumbs($post = '') {
     echo "</ul>";
     echo "</div>";
 }
+
+function update_service_home($post_ID, $post_after, $post_before) {
+    if ($post_ID == get_option('uwc_SERV_HOME_ID')) {
+        update_option('uwc_SERV_HOME_TITLE', $post_after->post_title);
+        update_option('uwc_SERV_HOME_SLUG', $post_after->post_name);
+    }
+}
+add_action( 'post_updated', 'update_service_home', 10, 3 );
+
 ?>
