@@ -10,7 +10,7 @@
 /*  Copyright 2015  UW IT ACA  (email : cstimmel@uw.edu)
 
     This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License, version 2, as 
+    it under the terms of the GNU General Public License, version 2, as
     published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
@@ -67,6 +67,10 @@ function uw_connect_options() {
   $data_servstat = 'uwc_SERVSTAT';
   $servcat = 'uwc_SERVCAT';
   $data_servcat = 'uwc_SERVCAT';
+  $serv_home_title = 'uwc_SERV_HOME_TITLE';
+  $data_serv_home_title = 'uwc_SERV_HOME_TITLE';
+  $serv_home_slug = 'uwc_SERV_HOME_SLUG';
+  $data_serv_home_slug = 'uwc_SERV_HOME_SLUG';
 
   // Read in existing option value from database
   $url_val = get_option( $url );
@@ -75,6 +79,8 @@ function uw_connect_options() {
   $myreq_val = get_option( $myreq );
   $servstat_val = get_option( $servstat );
   $servcat_val = get_option( $servcat );
+  $servhome_title_val = get_option( $serv_home_title );
+  $servhome_slug_val = get_option( $serv_home_slug );
   if ($myreq_val == '') {
       update_option( $myreq, 'off' );
   }
@@ -87,7 +93,7 @@ function uw_connect_options() {
 
   // See if the user has posted us some information
   // If they did, this hidden field will be set to 'Y'
-  if( isset($_POST[ $hidden_field_name ]) && $_POST[ $hidden_field_name ] == 'Y' ) { 
+  if( isset($_POST[ $hidden_field_name ]) && $_POST[ $hidden_field_name ] == 'Y' ) {
       // Read their posted value
       $url_val = $_POST[ $data_url ];
       $user_val = $_POST[ $data_user ];
@@ -95,6 +101,8 @@ function uw_connect_options() {
       $myreq_val = $_POST[ $data_myreq ];
       $servstat_val = $_POST[ $data_servstat ];
       $servcat_val = $_POST[ $data_servcat ];
+      $servhome_title_val = $_POST[ $data_serv_home_title ];
+      $servhome_slug_val = $_POST[ $data_serv_home_slug ];
 
       $prevmyreq = get_option( $myreq );
       $prevservstat = get_option( $servstat );
@@ -107,6 +115,8 @@ function uw_connect_options() {
       update_option( $myreq, $myreq_val );
       update_option( $servstat, $servstat_val );
       update_option( $servcat, $servcat_val );
+      update_option( $serv_home_title, $servhome_title_val );
+      update_option( $serv_home_slug, $servhome_slug_val);
 
       if ( $myreq_val == 'on' ) {
           if (!get_page_by_name('myrequest')) {
@@ -178,6 +188,14 @@ function uw_connect_options() {
 
 <p><?php _e("ServiceNow Pass:", 'menu' ); ?>
 <input type="password" name="<?php echo $data_pass; ?>" value="<?php echo $pass_val; ?>" size="20">
+</p><hr />
+
+<p><?php _e("Service Catalog Title:", 'menu' ); ?>
+<input type="text" name="<?php echo $data_serv_home_title; ?>" value="<?php echo $servhome_title_val; ?>" size="20">
+</p><hr />
+
+<p><?php _e("Service Catalog Slug:", 'menu' ); ?>
+<input type="text" name="<?php echo $data_serv_home_slug; ?>" value="<?php echo $servhome_slug_val; ?>" size="20">
 </p><hr />
 
 <h2>Enable Portals</h2>
@@ -436,7 +454,7 @@ function service_status() {
       }
       $sn_data = array();
       foreach ( $IDJSON->records as $record ) {
-          if( !isset( $sn_data[$record->cmdb_ci] ) ) { 
+          if( !isset( $sn_data[$record->cmdb_ci] ) ) {
                   $sn_data[$record->cmdb_ci] = array();
                   unset($first);
               }
@@ -460,10 +478,10 @@ function service_status() {
       }
 
 
-      if ( !empty( $JSON->records ) ) { 
+      if ( !empty( $JSON->records ) ) {
           $sn_data = array();
           foreach( $JSON->records as $record ) {
-              if( !isset( $sn_data[$record->cmdb_ci] ) ) { 
+              if( !isset( $sn_data[$record->cmdb_ci] ) ) {
                   $sn_data[$record->cmdb_ci] = array();
                   unset($first);
               }
@@ -485,7 +503,7 @@ function service_status() {
                   $class = $classes[$i];
                   $service = array_search($ci, $sn_data);
                   // handle the case of blank services and switches who's 'name' is a sequence of 5 or more numbers
-                  if ( $service !== '' && !preg_match('/^\d{5,}$/', $service) ) { 
+                  if ( $service !== '' && !preg_match('/^\d{5,}$/', $service) ) {
                       $time = end($ci);
                     echo "<div class='servicecontent row'>";
                       echo "<div class='servicewrap row'>";
@@ -497,7 +515,7 @@ function service_status() {
                       echo "<ul class='relatedincidents'>";
                       echo "<li class='incident-head row'>";
                           echo "<div class='col-lg-3 col-md-3 col-sm-3 col-xs-3'>Incident Number</div>";
-                          echo "<div class='col-lg-9 col-md-9 col-sm-9 col-xs-9'>Description</div>"; 
+                          echo "<div class='col-lg-9 col-md-9 col-sm-9 col-xs-9'>Description</div>";
                       echo "</li>";
                           foreach( $ci as $incident ) {
                             if (!is_string($incident)) {
