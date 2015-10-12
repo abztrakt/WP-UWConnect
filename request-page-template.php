@@ -1,6 +1,4 @@
 <?php
-echo $_SERVER['REMOTE_USER'];
-$_SERVER['REMOTE_USER'] = 'pewhite';
 	define( 'DONOTCACHEPAGE', True );
 if ( isset( $_SERVER['REMOTE_USER'] ) ) {
     $user = $_SERVER['REMOTE_USER'];
