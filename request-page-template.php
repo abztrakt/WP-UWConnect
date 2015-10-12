@@ -1,6 +1,7 @@
 <?php
-
-define( 'DONOTCACHEPAGE', True );
+echo $_SERVER['REMOTE_USER'];
+$_SERVER['REMOTE_USER'] = 'pewhite';
+	define( 'DONOTCACHEPAGE', True );
 if ( isset( $_SERVER['REMOTE_USER'] ) ) {
     $user = $_SERVER['REMOTE_USER'];
 } else if ( isset($_SERVER['REDIRECT_REMOTE_USER'] ) ) {
@@ -255,12 +256,12 @@ get_header(); ?>
                         //Set up comment box
                         if(!$error_flag && $record->state != "Closed" ) {
                             $submit_url = site_url() . '/myrequest/' . $sn_num . '/'; ?>
-                            <form class='request-comment-form' role='form' action="<?php $submit_url; ?>" method='post'>
+                            <form class='request-comment-form' role='form' action="<?php $submit_url; ?>" method='post' onSubmit="submit.disabled=true;">
                             <div class='form-group' style='margin-bottom:1em;'>
                                 <label for='exampleInputPassword1'>Respond to Support Staff:</label>
                                 <textarea name='comments' class='form-control' rows='3' style='resize:vertical;'></textarea>
                             </div>
-                            <button type='submit' class='btn btn-primary'>Submit</button>
+                            <button name="submit" id="submit" type='submit' class='btn btn-primary'>Submit</button>
                             <input type="hidden" name="submitted" id="submitted" value="true" />
                         </form>
                         <?php 
